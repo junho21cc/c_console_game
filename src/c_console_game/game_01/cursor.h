@@ -1,4 +1,6 @@
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
+#endif
 #include <time.h>
 
 #define randomize() srand((unsigned)time(NULL))

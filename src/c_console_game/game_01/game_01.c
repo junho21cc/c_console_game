@@ -1,5 +1,7 @@
 ﻿#include <stdio.h>
+#if !defined(__APPLE__)
 #include <conio.h>
+#endif
 #include "cursor.h"
 
 #define putsxy(x, y, s) {gotoxy(x, y);puts(s);}
