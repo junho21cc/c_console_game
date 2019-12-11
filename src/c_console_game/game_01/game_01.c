@@ -17,11 +17,11 @@ int main()
 	for (;;)
 	{
 		int ch;
-		ch = _getch();
+		ch = getch();
 		printf("[1]key = %d, 0x%X\n", ch, ch);
 		if (ch == 0xE0 || ch == 0)
 		{
-			ch = _getch();
+			ch = getch();
 			printf("[2]key = %d, 0x%X\n", ch, ch);
 			/*
 			switch (ch)
