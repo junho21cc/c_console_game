@@ -17,10 +17,15 @@ int main()
 	// 게임 진행 루프
 	int x = 55;
 	int y = 10;
+	int dx;
+	int dy;
 
 	for (;;)
 	{
+		dx = 0;
+		dy = 0;
 		int ch;	
+
 		ch = getch();
 		if (ch == 0xE0 || ch == 0)
 		{
@@ -28,31 +33,19 @@ int main()
 			
 			if (ch == 72)
 			{
-				putsxy(x, y - 1, "A");
-				putsxy(x, y, " ");
-				y = y - 1;
-				printf("(%d, %d)", x, y);
+				dy = -1;
 			}
 			else if(ch == 80)
 			{
-				putsxy(x, y + 1, "A");
-				putsxy(x, y, " ");
-				y = y + 1;
-				printf("(%d, %d)", x, y);
+				dy = 1;
 			}
 			else if (ch == 75)
 			{
-				putsxy(x - 1, y, "A");
-				putsxy(x, y, " ");
-				x = x - 1;
-				printf("(%d, %d)", x, y);
+				dx = -1;
 			}
 			else
 			{
-				putsxy(x + 1, y, "A");
-				putsxy(x, y, " ");
-				x = x + 1;
-				printf("(%d, %d)", x, y);
+				dx = 1;
 			}
 			/*
 			if (x < 0)
@@ -61,6 +54,10 @@ int main()
 			}
 			if(x > 118 || y > 28)
 			*/
+			putsxy(x + dx, y + dy, "A");
+			putsxy(x, y, " ");
+			x = x + dx;
+			y = y + dy;
 		}
 		else
 		{
