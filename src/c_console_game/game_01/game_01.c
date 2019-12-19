@@ -9,9 +9,15 @@
 
 int main()
 {
+	char stage[20][40] = { "####", "#  #", "#  #",
+		"#  ###", "#.$$@#", "#  . #", "#  ###", "####" };
+	for (int i = 0; i < 20; i++)
+	{
+		printf("%s\n", stage[i]);
+	}
+	/*
 	clrscr();
-	putsxy(45, 2, "KEY TEST");
-	putsxy(45, 4, "ESC:종료");
+	putsxy(45, 2, "STAGE");
 	putsxy(55, 10, "A");
 
 	// 게임 진행 루프
@@ -47,13 +53,6 @@ int main()
 			{
 				dx = 1;
 			}
-			/*
-			if (x < 0)
-			{
-				x = 0;
-			}
-			if(x > 118 || y > 28)
-			*/
 			putsxy(x + dx, y + dy, "A");
 			putsxy(x, y, " ");
 			x = x + dx;
@@ -67,6 +66,6 @@ int main()
 			}
 		}
 	}
-
+	*/
 	return 0;
 }
