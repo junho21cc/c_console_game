@@ -10,11 +10,17 @@
 int main()
 {
 	// 고정된 스테이지
-	char stage[20][40] = { "####", "#  #", "#  #",
-		"#  ###", "#.$$@#", "#  . #", "#  ###", "####" };
+	char stage[20][40] = { 
+		"####", 
+		"#  #",
+		"#  #",
+		"#  ###",
+		"#.$$@#",
+		"#  . #",
+		"#  ###", 
+		"####" };
 	// 가변 스테이지
-	char back_stage[20][40] = { "####", "#  #", "#  #",
-		"#  ###", "#.$$@#", "#  . #", "#  ###", "####" };
+	char back_stage[20][40];
 
 	int x, y;
 	int dx, dy;
@@ -37,6 +43,7 @@ int main()
 				x = j;
 				y = i;
 			}
+			back_stage[i][j] = stage[i][j];
 		}
 	}
 	// 게임 루프
@@ -75,37 +82,40 @@ int main()
 				dy = 0;
 			}
 			// 움직이는 상자 판단
-			else if (back_stage[y + dy][x + dx] == '$')
+			else if (back_stage[y + dy][x + dx] == ' ' || back_stage[y + dy][x + dx] == '.')
 			{
-				if (back_stage[y + dy*2][x + dx*2] != ' ')
-				{
-					// 위치에 도달한 상자는 만족됨
-					if (stage[y + dy*2][x + dx*2] == '.')
-					{
-						back_stage[y + dy][x + dx] = 'ㅇ';
-					}
-					else
-					{
-						dx = 0;
-						dy = 0;
-					}
-				}
-				putsxy(x + dx * 2, y + dy * 2, "$");
-				back_stage[y + dy * 2][x + dx * 2] = '$';
-			}
 
+			}
+			else// 진행방향 1칸 앞에 상자인 경우
+			{
+				// 진행방향 2칸 앞에 상자가 아닌경우
+				if (back_stage[y + dy * 2][x + dx * 2] == ' ' || back_stage[y + dy * 2][x + dx * 2] == '.')
+				{
+					putsxy(x + dx * 2, y + dy * 2, "$");
+					back_stage[y + dy * 2][x + dx * 2] = '$';
+				}
+				// 진행방향 2칸 앞에 상자인 경우
+				else
+				{
+					dx = 0;
+					dy = 0;
+				}
+			}
+			// 주인공 움직이기
 			putsxy(x + dx, y + dy, "@");
 			back_stage[y + dy][x + dx] = '@';
+
+			// 지나온 자리
 			if (dx != 0 || dy != 0)
 			{
 				putsxy(x, y, " ");
 				back_stage[y][x] = ' ';
+				// 점 살리기
+				if (stage[y][x] == '.')
+				{
+					putsxy(x, y, ".");
+				}
 			}
-			if (stage[y][x] == '.')
-			{
-				putsxy(x, y, ".");
-			}
-
 			x = x + dx;
 			y = y + dy;
 		}
