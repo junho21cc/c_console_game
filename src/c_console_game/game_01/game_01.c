@@ -7,26 +7,24 @@
 #define putsxy(x, y, s) {gotoxy(x, y);puts(s);}
 #define KEY_ESC 27
 
-int main()
+// 고정된 스테이지
+char stage[20][40] = {
+	"####",
+	"#  #",
+	"#  #",
+	"#  ###",
+	"#.$$@#",
+	"#  . #",
+	"#  ###",
+	"####" };
+// 가변 스테이지
+char back_stage[20][40];
+int x, y;
+int moving_count;
+
+void init_stage()
 {
-	// 고정된 스테이지
-	char stage[20][40] = { 
-		"####", 
-		"#  #",
-		"#  #",
-		"#  ###",
-		"#.$$@#",
-		"#  . #",
-		"#  ###", 
-		"####" };
-	// 가변 스테이지
-	char back_stage[20][40];
-
-	int x, y;
-	int dx, dy;
-	int is_win;
-	int moving_count = 0;
-
+	clrscr();
 	// 스테이지 출력( 기본값 )
 	for (int i = 0; i < 20; i++)
 	{
@@ -48,6 +46,18 @@ int main()
 			back_stage[i][j] = stage[i][j];
 		}
 	}
+	moving_count = 0;
+}
+
+
+int main()
+{
+	init_stage();
+
+	int dx, dy;
+	int is_win;
+
+	
 	// 게임 루프
 	for (;;)
 	{
@@ -147,6 +157,18 @@ int main()
 		if (is_win == 1)
 		{
 			putsxy(45, 20, "you are winner!");
+			break;
+		}
+
+		// 새로하기
+		if (ch == 'r' || ch == 'R')
+		{
+			init_stage();
+		}
+
+		// 종료하기
+		if (ch == 'x'|| ch == 'X')
+		{
 			break;
 		}
 	}
