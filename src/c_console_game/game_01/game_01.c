@@ -7,8 +7,10 @@
 #define putsxy(x, y, s) {gotoxy(x, y);puts(s);}
 #define KEY_ESC 27
 
+int stage_level = 0;
 // 고정된 스테이지
-char stage[20][40] = {
+char stage[5][20][40] = {
+{
 	"####",
 	"#  #",
 	"#  #",
@@ -16,7 +18,19 @@ char stage[20][40] = {
 	"#.$$@#",
 	"#  . #",
 	"#  ###",
-	"####" };
+	"####"
+},
+{
+	" #####",
+	" #   #",
+	"##.# #",
+	"#  @ #",
+	"#  $ #",
+	"# # ##",
+	"#   #",
+	"#####"
+},
+};
 // 가변 스테이지
 char back_stage[20][40];
 int x, y;
@@ -28,22 +42,26 @@ void init_stage()
 	// 스테이지 출력( 기본값 )
 	for (int i = 0; i < 20; i++)
 	{
-		printf("%s\n", stage[i]);
+		printf("%s\n", stage[stage_level][i]);
 	}
 
-	putsxy(45, 2, "STAGE");
+	char buff[10];
+	sprintf_s(buff, sizeof(buff), "%d", stage_level + 1);
+
+	putsxy(45, 2, "S T A G E ");
+	putsxy(55, 2, buff);
 
 	// 주인공 찾기
 	for (int i = 0; i < 20; i++)
 	{
 		for (int j = 0; j < 40; j++)
 		{
-			if (stage[i][j] == '@')
+			if (stage[stage_level][i][j] == '@')
 			{
 				x = j;
 				y = i;
 			}
-			back_stage[i][j] = stage[i][j];
+			back_stage[i][j] = stage[stage_level][i][j];
 		}
 	}
 	moving_count = 0;
@@ -90,7 +108,7 @@ int main()
 				dx = 1;
 			}
 			// 벽 판단
-			if (stage[y + dy][x + dx] == '#')
+			if (stage[stage_level][y + dy][x + dx] == '#')
 			{
 				moving_count--;
 				dx = 0;
@@ -133,7 +151,7 @@ int main()
 				putsxy(45, 5, mc);
 
 				// 점 살리기
-				if (stage[y][x] == '.')
+				if (stage[stage_level][y][x] == '.')
 				{
 					putsxy(x, y, ".");
 					back_stage[y][x] = '.';
@@ -157,7 +175,8 @@ int main()
 		if (is_win == 1)
 		{
 			putsxy(45, 20, "you are winner!");
-			break;
+			stage_level++;
+			init_stage();
 		}
 
 		// 새로하기
