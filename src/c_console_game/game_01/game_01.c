@@ -81,6 +81,9 @@ void init_stage()
 
 	putsxy(45, 2, "S T A G E ");
 	putsxy(55, 2, buff);
+	putsxy(45, 4, "다시 하기 : r \n끝내기 : x");
+	putsxy(45, 5, "");
+	putsxy(45, 6, "움직이기 : 방향키");
 
 	// 주인공 찾기
 	for (int i = 0; i < 20; i++)
@@ -178,8 +181,8 @@ int main()
 				char mc[10];
 				sprintf_s(mc, sizeof(mc), "%d", moving_count);
 
-				putsxy(45, 4, "움직인횟수");
-				putsxy(45, 5, mc);
+				putsxy(45, 8, "움직인횟수");
+				putsxy(56, 8, mc);
 
 				// 점 살리기
 				if (stage[stage_level][y][x] == '.')
