@@ -8,8 +8,9 @@
 #define KEY_ESC 27
 
 int stage_level = 0;
-int stage_width;
-int stage_height;
+int stage_width = 0;
+int stage_height = 0;
+
 // 고정된 스테이지
 char stage[5][20][40] = {
 {
@@ -95,20 +96,26 @@ void init_stage()
 			back_stage[i][j] = stage[stage_level][i][j];
 			if (stage[stage_level][i][j] == NULL)
 			{
-				stage_width = j / 2;
+				if (stage_width <= j)
+				{
+					stage_width = j;
+				}
 				break;
 			}
 		}
-		if (stage[stage_level][i] == NULL)
+		if (stage[stage_level][i][0] == NULL)
 		{
-			stage_width = i / 2;
+			stage_height = i;
 			break;
 		}
 	}
 	moving_count = 0;
+
 	// 스테이지 출력( 기본값 )
+
 	for (int i = 0; i < 20; i++)
 	{
+		gotoxy((60 - stage_width) / 2, (24 - stage_height) / 2 + i);
 		printf("%s\n", stage[stage_level][i]);
 	}
 }
@@ -170,7 +177,7 @@ int main()
 				// 진행방향 2칸 앞에 상자가 아닌경우
 				if (back_stage[y + dy * 2][x + dx * 2] == ' ' || back_stage[y + dy * 2][x + dx * 2] == '.')
 				{
-					putsxy(x + dx * 2 + stage_width, y + dy * 2 + stage_height, "$");
+					putsxy(x + dx * 2 + (60 - stage_width) / 2, y + dy * 2 + (24 - stage_height) / 2, "$");
 					back_stage[y + dy * 2][x + dx * 2] = '$';
 				}
 				// 진행방향 2칸 앞에 상자인 경우
@@ -182,24 +189,24 @@ int main()
 				}
 			}
 			// 주인공 움직이기
-			putsxy(x + dx + stage_width, y + dy + stage_height, "@");
+			putsxy(x + dx + (60 - stage_width) / 2, y + dy + (24 - stage_height) / 2, "@");
 
 			// 지나온 자리
 			if (dx != 0 || dy != 0)
 			{
-				putsxy(x + stage_width, y + stage_height, " ");
+				putsxy(x + (60 - stage_width) / 2, y + (24 - stage_height) / 2, " ");
 				back_stage[y][x] = ' ';
 
 				char mc[10];
 				sprintf_s(mc, sizeof(mc), "%d", moving_count);
 
-				putsxy(60, 8, "움직인횟수");
-				putsxy(70, 8, mc);
+				putsxy(45, 4, "움직인횟수");
+				putsxy(45, 5, mc);
 
 				// 점 살리기
 				if (stage[stage_level][y][x] == '.')
 				{
-					putsxy(x + stage_width, y + stage_height, ".");
+					putsxy(x + (60 - stage_width) / 2, y + (24 - stage_height) / 2, ".");
 					back_stage[y][x] = '.';
 
 				}
@@ -220,7 +227,7 @@ int main()
 		}
 		if (is_win == 1)
 		{
-			putsxy(60, 20, "you are winner!");
+			putsxy(45, 20, "you are winner!");
 			stage_level++;
 			init_stage();
 		}
