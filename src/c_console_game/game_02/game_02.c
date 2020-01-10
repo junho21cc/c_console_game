@@ -1,4 +1,5 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
+#include <time.h>
 #if !defined(__APPLE__)
 #include <conio.h>
 #endif
@@ -32,73 +33,140 @@ char tetris[21][11] = {
 
 char tetris_block[10][5][5] =
 {
-	{ // ¤ÓÇü
+	{ // ã…£í˜•
 		"@",
 		"@",
 		"@",
 		"@"
 	},
-	{ // ¤±Çü
+	{ // ã…í˜•
 		"@@",
 		"@@"
 	},
-	{ //L Çü
+	{ //L í˜•
 		"@",
 		"@",
 		"@@"
 	},
-	{ // ¤ÇÇü
+	{ // ã…—í˜•
 		"@",
 		"@@",
 		"@"
 	},
-	{ // ¤¡Çü
+	{ // ã„±í˜•
 		"@@@",
 		"@"
 	},
-	{ // ZÇü
+	{ // Zí˜•
 		"@@",
 		" @@"
 	},
-	{ // SÇü
+	{ // Sí˜•
 		" @@",
 		"@@"
 	}
 };
+int form_number;
+int position_y = 4;
+
+int dx;
+int form_width = 0;
+int form_height = 0;
+
+void make_block()
+{
+	 form_number = rand() % 7;
+
+	 // ë¸”ëŸ­ ëª¨ì–‘ì˜ ê°€ë¡œì™€ ì„¸ë¡œ ê¸¸ì´ êµ¬í•˜ê¸°
+	 for (int i = 0; i < 5; i++)
+	 {
+		 for (int j = 0; j < 5; j++)
+		 {
+			 if (tetris_block[form_number][i][j] == NULL)
+			 {
+				 if (form_width <= j)
+				 {
+					 form_width = j;
+				 }
+				 break;
+			 }
+		 }
+		 if (tetris_block[form_number][i][0] == NULL)
+		 {
+			 form_height = i;
+			 break;
+		 }
+	 }
+}
+
 
 int main()
 {
-	gotoxy(0, 4);
+	clock_t check_point_1;
+
+	gotoxy(0, position_y);
 	for (int i = 0; i < 20; i++)
 	{
-		// ¶ç¾î¾²±â 10¹øÀÓ
+		// ë„ì–´ì“°ê¸° 10ë²ˆì„
 		printf("          %s\n", tetris[i]);
 	}
 
-	int random = rand() % 7;
-	int ch;
+	make_block();
 
-	ch = getch();
-	if (ch == 0xE0 || ch == 0)
-	{
-		ch = getch();
-
-		for (int i = 0; i < 5; i++)
-		{
-			gotoxy(13, 4 + i);
-			printf("%s\n", tetris_block[random][i]);
-
-		}
-	}
+	int count = 0;
 
 	for (;;)
 	{
-		for (int i = 0; i < 15; i++)
+		if (_kbhit())
 		{
-			gotoxy(14, 8 + i);
-			printf("%s\n", tetris_block[random][i]);
+			int ch;
+			ch = getch();
+			if (ch == 0xE0 || ch == 0)
+			{
+				ch = getch();
+				/*
+				if (ch == 72)
+				{// ìœ„
+					dy = -1;
+				}
+				*/
+				if (ch == 75)
+				{// ì™¼ìª½
+					dx = -1;
+				}
+				else
+				{// ì˜¤ë¥¸ìª½
+					dx = 1;
+				}
+			}
 		}
-	}
 
+			count++;
+
+			if (count == 3)
+			{// ì•„ë˜
+				count = 0;
+				if (tetris[position_y - form_height - 1][1] == ' ')
+				{
+					for (int i = 0; i < form_height; i++)
+					{
+						putsxy(13 + dx, position_y - 1, "   ");
+					}
+					for (int i = 0; i < form_height; i++)
+					{
+						gotoxy(13 + dx, position_y + i);
+						printf("%s\n", tetris_block[form_number][i]);
+					}
+					// í•œì¹¸ì”© ë°‘ìœ¼ë¡œ
+					position_y = position_y + 1;
+				}
+				else
+				{
+					position_y = 4;
+					make_block();
+				}
+			}
+			delay(100);
+		}
 	return 0;
 }
