@@ -68,6 +68,7 @@ char tetris_block[10][5][5] =
 };
 int form_number;
 int position_y = 4;
+int position_x = 13;
 
 int dx;
 int form_width = 0;
@@ -111,8 +112,6 @@ int main()
 		printf("          %s\n", tetris[i]);
 	}
 
-	make_block();
-
 	int count = 0;
 
 	for (;;)
@@ -143,30 +142,41 @@ int main()
 
 			count++;
 
-			if (count == 3)
-			{// 아래
-				count = 0;
-				if (tetris[position_y - form_height - 1][1] == ' ')
+		if (count == 3)
+		{// 아래 
+			count = 0;
+			/*
+			if (tetris[position_y - form_height - 1][1] == ' ')
+			{
+				for (int i = 0; i < form_height; i++)
 				{
-					for (int i = 0; i < form_height; i++)
-					{
-						putsxy(13 + dx, position_y - 1, "   ");
-					}
-					for (int i = 0; i < form_height; i++)
-					{
-						gotoxy(13 + dx, position_y + i);
-						printf("%s\n", tetris_block[form_number][i]);
-					}
-					// 한칸씩 밑으로
-					position_y = position_y + 1;
+					putsxy(position_x, position_y - 1, "     ");
 				}
-				else
+				for (int i = 0; i < form_height; i++)
 				{
-					position_y = 4;
-					make_block();
+					gotoxy(position_x+ dx, position_y + i);
+					printf("%s\n", tetris_block[form_number][i]);
 				}
+				// 한칸씩 밑으로
+				position_y = position_y + 1;
+				position_x = position_x + dx;
 			}
-			delay(100);
+			else
+			{
+				position_y = 4;
+				make_block();
+			}
+			*/
+			/*
+			블럭이 아래로 떨어지는 알고리즘
+			1. 블럭의 현재위치에 X좌표, Y좌표를 구한다
+			2. 움직이려는 방향( 떨어지는것은 아래 ) 에 움직이려는 칸이 빈칸이여만 움직임
+			3. 움직이려는 방향의 움직이려는 칸에 #이나 @이 존해하면 안됨 !!
+			4. 각 블럭의 인덱스마다 비교를 해야됨. (그리기만 함, TETRIS에 직접 적용하지 않음)
+				
+			*/
+		}
+		delay(100);
 		}
 	return 0;
 }
