@@ -67,10 +67,9 @@ char tetris_block[10][5][5] =
 	}
 };
 int form_number;
-int position_y = 4;
-int position_x = 13;
 
 int dx;
+int dy = 1;
 int form_width = 0;
 int form_height = 0;
 
@@ -103,20 +102,30 @@ void make_block()
 
 int main()
 {
-	clock_t check_point_1;
 
-	gotoxy(0, position_y);
+	gotoxy(0, 4);
 	for (int i = 0; i < 20; i++)
 	{
 		// 띄어쓰기 10번임
 		printf("          %s\n", tetris[i]);
 	}
 
+	int position_y = 4;
+	int position_x = 13;
+
 	int count = 0;
+
+	make_block();
 
 	for (;;)
 	{
-		if (_kbhit())
+		if (dy == 0)
+		{
+			position_y = 4;
+			position_x = 13;
+			make_block();
+		}
+		if (_kbhit())  // dx 결정 부분
 		{
 			int ch;
 			ch = getch();
@@ -139,11 +148,15 @@ int main()
 				}
 			}
 		}
+		else
+		{
+			dx = 0;
+		}
 
-			count++;
+		count++;
 
 		if (count == 3)
-		{// 아래 
+		{
 			count = 0;
 			/*
 			if (tetris[position_y - form_height - 1][1] == ' ')
@@ -169,14 +182,64 @@ int main()
 			*/
 			/*
 			블럭이 아래로 떨어지는 알고리즘
-			1. 블럭의 현재위치에 X좌표, Y좌표를 구한다
-			2. 움직이려는 방향( 떨어지는것은 아래 ) 에 움직이려는 칸이 빈칸이여만 움직임
-			3. 움직이려는 방향의 움직이려는 칸에 #이나 @이 존해하면 안됨 !!
+			1. 블럭들의 현재위치에 X좌표, Y좌표를 구한다
+			2. 블럭안에 @들이 떨어지려는 방향에  움직이려는 칸이 빈칸이여만 움직임
+				낙하는 무조건 하는 일
+			3. 움직이려는 방향의 움직이려는 칸에 #이나 @이 존재하면 안됨 !!
 			4. 각 블럭의 인덱스마다 비교를 해야됨. (그리기만 함, TETRIS에 직접 적용하지 않음)
-				
 			*/
+
+			gotoxy(position_x, position_y);
+
+			for (int i = 0; i < form_height; i++)     // dy 결정 부분
+			{
+				for (int j = 0; j < form_width; j++)
+				{
+					if (tetris_block[form_number][i][j] == '@')
+					{
+						if (tetris[position_y + i - 3][position_x + j - 11] == ' ')
+						{
+							dy = 1;
+						}
+						else
+						{
+							dy = 0;
+							break;
+						}
+					}
+				}
+			} // 움직이기
+			if (dy == 0)
+			{
+				for (int i = 0; i < form_height; i++)
+				{
+					for (int j = 0; j < form_width; j++)
+					{
+						if (tetris_block[form_number][i][j] == '@')
+						{
+							tetris[position_y - 4][position_x - 11] = '@';
+						}
+					}
+				}
+			}
+			for (int i = 0; i < form_height; i++)
+			{
+				for (int j = 0; j < form_width; j++)
+				{
+					putsxy(position_x + j, position_y + i, " ");
+					
+				}
+			}
+			for (int i = 0; i < form_height; i++)
+			{
+				putsxy(position_x + dx, position_y + dy + i, tetris_block[form_number][i]);
+			}
+			position_x = position_x + dx;
+			position_y = position_y + dy;
+
+
 		}
-		delay(100);
-		}
+		delay(50);
+	}
 	return 0;
 }
