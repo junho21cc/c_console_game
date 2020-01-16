@@ -33,7 +33,7 @@ char tetris[21][11] = {
 
 char tetris_block[10][5][5] =
 {
-	{ // ㅣ형
+	{ // I형
 		"@",
 		"@",
 		"@",
@@ -43,7 +43,7 @@ char tetris_block[10][5][5] =
 		"@@",
 		"@@"
 	},
-	{ //L 형
+	{ // L형
 		"@",
 		"@",
 		"@@"
@@ -67,9 +67,6 @@ char tetris_block[10][5][5] =
 	}
 };
 int form_number;
-
-int dx;
-int dy = 1;
 int form_width = 0;
 int form_height = 0;
 
@@ -102,7 +99,9 @@ void make_block()
 
 int main()
 {
-
+	int dx = 0;
+	int dy = 1;
+	
 	gotoxy(0, 4);
 	for (int i = 0; i < 20; i++)
 	{
@@ -113,18 +112,20 @@ int main()
 	int position_y = 4;
 	int position_x = 13;
 
-	int count = 0;
+	int count = 1;
 
 	make_block();
 
 	for (;;)
 	{
+		// 못 움직이는경우에만 초기화 시킴.
 		if (dy == 0)
 		{
 			position_y = 4;
 			position_x = 13;
 			make_block();
 		}
+
 		if (_kbhit())  // dx 결정 부분
 		{
 			int ch;
@@ -157,7 +158,7 @@ int main()
 
 		if (count == 3)
 		{
-			count = 0;
+			count = 1;
 			/*
 			if (tetris[position_y - form_height - 1][1] == ' ')
 			{
@@ -191,10 +192,14 @@ int main()
 
 			gotoxy(position_x, position_y);
 
-			for (int i = 0; i < form_height; i++)     // dy 결정 부분
+			// dy 결정 부분
+
+			for (int i = 0; i < form_height; i++)    
 			{
 				for (int j = 0; j < form_width; j++)
 				{
+					// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
+					// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
 					if (tetris_block[form_number][i][j] == '@')
 					{
 						if (tetris[position_y + i - 3][position_x + j - 11] == ' ')
@@ -208,13 +213,16 @@ int main()
 						}
 					}
 				}
-			} // 움직이기
+			} 
+				// 움직이기
+
 			if (dy == 0)
-			{
+			{   // 테트리스 좌표에 직접 넣기
 				for (int i = 0; i < form_height; i++)
 				{
 					for (int j = 0; j < form_width; j++)
 					{
+						// 
 						if (tetris_block[form_number][i][j] == '@')
 						{
 							tetris[position_y - 4][position_x - 11] = '@';
@@ -222,18 +230,21 @@ int main()
 					}
 				}
 			}
+
 			for (int i = 0; i < form_height; i++)
-			{
+			{ //  원래 있던 자리에 빈칸으로 채우기
 				for (int j = 0; j < form_width; j++)
 				{
 					putsxy(position_x + j, position_y + i, " ");
 					
 				}
 			}
+
 			for (int i = 0; i < form_height; i++)
-			{
+			{   // 움직일 자리로 움직임
 				putsxy(position_x + dx, position_y + dy + i, tetris_block[form_number][i]);
 			}
+			// 다음 위치
 			position_x = position_x + dx;
 			position_y = position_y + dy;
 
