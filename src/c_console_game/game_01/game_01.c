@@ -145,19 +145,19 @@ int main()
 			ch = getch();
 			
 			if (ch == 72)
-			{
+			{// 위
 				dy = -1;
 			}
 			else if(ch == 80)
-			{
+			{// 아래
 				dy = 1;
 			}
 			else if (ch == 75)
-			{
+			{// 왼쪽
 				dx = -1;
 			}
 			else
-			{
+			{// 오른쪽
 				dx = 1;
 			}
 			// 벽 판단
