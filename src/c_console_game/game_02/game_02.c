@@ -95,6 +95,8 @@ void make_block()
 
 int main()
 {
+	// 함수로 바꾸기?
+
 	int dx = 0;
 	int dy = 1;
 	
@@ -107,7 +109,7 @@ int main()
 
 	// default => 보여주는 좌표값의 기본값이다.
 	int default_y = 4;
-	int default_x = 12;
+	int default_x = 9;
 
 	// position => 테트리스 좌표값이다.
 	int position_y = 0;
@@ -198,22 +200,28 @@ int main()
 
 			for (int i = 0; i < form_height; i++)    
 			{
+				int is_dy_0 = 0;
 				for (int j = 0; j < form_width; j++)
 				{
 					// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
 					// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
 					if (tetris_block[form_number][i][j] == '@')
 					{
-						if (tetris[position_y + i + 1][position_x + j + 1] == ' ')
+						if (tetris[position_y + i + 1][position_x + j] == ' ')
 						{
 							dy = 1;
 						}
 						else
 						{
 							dy = 0;
+							is_dy_0 = 1;
 							break;
 						}
 					}
+				}
+				if (is_dy_0 == 1)
+				{
+					break;
 				}
 			} 
 				// 움직이기
@@ -227,7 +235,7 @@ int main()
 						// 
 						if (tetris_block[form_number][i][j] == '@')
 						{
-							tetris[position_y][position_x] = '@';
+							tetris[position_y + i][position_x + j] = '@';
 						}
 					}
 				}
@@ -260,9 +268,8 @@ int main()
 					}
 				}
 			}
-			
 		}
-		delay(50);
+		delay(100);
 	}
 	return 0;
 }
