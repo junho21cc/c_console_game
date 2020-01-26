@@ -109,7 +109,7 @@ int main()
 
 	// default => 보여주는 좌표값의 기본값이다.
 	int default_y = 4;
-	int default_x = 9;
+	int default_x = 10;
 
 	// position => 테트리스 좌표값이다.
 	int position_y = 0;
@@ -130,7 +130,7 @@ int main()
 			make_block();
 		}
 		// 키보드가 눌리는지 아닌지 판단.
-		if (_kbhit())  // dx 결정 부분
+		if (_kbhit())  // dx 입력 부분
 		{
 			int ch;
 			ch = getch();
@@ -147,7 +147,7 @@ int main()
 				{// 왼쪽
 					dx = -1;
 				}
-				else
+				if(ch == 77)
 				{// 오른쪽
 					dx = 1;
 				}
@@ -196,17 +196,23 @@ int main()
 
 			gotoxy(default_x + position_x, default_y + position_y);
 
-			// dy 결정 부분
+			// dy, dx 결정 부분
 
 			for (int i = 0; i < form_height; i++)    
 			{
 				int is_dy_0 = 0;
+				
 				for (int j = 0; j < form_width; j++)
 				{
 					// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
 					// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
+					// 하지만 벽쪽에서는 dx가 0이 되야한다.
 					if (tetris_block[form_number][i][j] == '@')
 					{
+						if (tetris[position_y + i][position_x + j + dx] != ' ')
+						{
+							dx = 0;
+						}
 						if (tetris[position_y + i + 1][position_x + j] == ' ')
 						{
 							dy = 1;
@@ -254,6 +260,7 @@ int main()
 			}
 
 			// 다음 위치
+			
 			position_x = position_x + dx;
 			position_y = position_y + dy;
 
@@ -273,4 +280,3 @@ int main()
 	}
 	return 0;
 }
- 
