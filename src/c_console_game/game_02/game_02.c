@@ -49,13 +49,13 @@ char tetris_block[10][5][5] =
 		"@@"
 	},
 	{ // ㅗ형
-		"@",
-		"@@",
-		"@"
+		" @",
+		"@@@" 
 	},
 	{ // ㄱ형
-		"@@@",
-		"@"
+		"@@",
+		" @",
+		" @"
 	},
 	{ // Z형
 		"@@",
@@ -66,9 +66,21 @@ char tetris_block[10][5][5] =
 		"@@"
 	}
 };
+
+int dx = 0;
+int dy = 1;
+
 int form_number;
 int form_width = 0;
 int form_height = 0;
+
+// default => 보여주는 좌표값의 기본값이다.
+int default_y = 4;
+int default_x = 10;
+
+// position => 테트리스 좌표값이다.
+int position_y = 0;
+int position_x = 3;
 
 void make_block()
 {
@@ -93,27 +105,128 @@ void make_block()
 	 }
 }
 
+void input_keyboard()
+{
+	int ch;
+	ch = getch();
+	if (ch == 0xE0 || ch == 0)
+	{
+		ch = getch();
+		/*
+		if (ch == 72)
+		{// 위
+			dy = -1;
+		}
+		*/
+		if (ch == 75)
+		{// 왼쪽
+			dx = -1;
+		}
+		if (ch == 77)
+		{// 오른쪽
+			dx = 1;
+		}
+	}
+}
+
+void next_position_check()
+{
+	for (int i = 0; i < form_height; i++)
+	{
+		int is_dy_0 = 0;
+
+		for (int j = 0; j < form_width; j++)
+		{
+			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
+			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
+			// 하지만 벽쪽에서는 dx가 0이 되야한다.
+			if (tetris_block[form_number][i][j] == '@')
+			{
+				if (tetris[position_y + i][position_x + j + dx] != ' ')
+				{
+					dx = 0;
+				}
+				if (tetris[position_y + i + 1][position_x + j] == ' ')
+				{
+					dy = 1;
+				}
+				else
+				{
+					dy = 0;
+					is_dy_0 = 1;
+					break;
+				}
+			}
+		}
+		if (is_dy_0 == 1)
+		{
+			break;
+		}
+	}
+}
+
+void input_position()
+{
+	for (int i = 0; i < form_height; i++)
+	{
+		for (int j = 0; j < form_width; j++)
+		{
+			// 
+			if (tetris_block[form_number][i][j] == '@')
+			{
+				tetris[position_y + i][position_x + j] = '@';
+			}
+		}
+	}
+}
+
+void input_void()
+{
+	for (int i = 0; i <= form_height; i++)
+	{ //  원래 있던 자리에 빈칸으로 채우기
+		for (int j = 0; j <= form_width; j++)
+		{
+			if (tetris_block[form_number][i][j] == '@')
+			{
+				putsxy(default_x + position_x + j, default_y + position_y + i, " ");
+
+			}
+		}
+	}
+}
+
+void show_move()
+{
+	for (int i = 0; i <= form_height; i++)
+	{   // 움직일 자리로 움직임
+		for (int j = 0; j <= form_width; j++)
+		{
+			if (tetris_block[form_number][i][j] == '@')
+			{
+				putsxy(default_x + position_x + j, default_y + position_y + i, "@");
+			}
+		}
+	}
+}
+
+
 int main()
 {
 	// 함수로 바꾸기?
+	// 라인 클리어 어떻게?
+	//	--> 한줄 만들어지면  지우고 한줄씩 밑으로 내리자. 
+	// 회전 하기 
+	//   1. 중심점찾기
+	//   2. 중심점 기준해서 시계방향으로 회전 시키기
+	//   3. 최대 가로길이와 최대 세로 길이를 서로 바꾼다
+	//   4. 모양을 바꾼다.
 
-	int dx = 0;
-	int dy = 1;
-	
 	gotoxy(0, 4);
 	for (int i = 0; i < 20; i++)
 	{
 		// 띄어쓰기 10번임
 		printf("          %s\n", tetris[i]);
 	}
-
-	// default => 보여주는 좌표값의 기본값이다.
-	int default_y = 4;
-	int default_x = 10;
-
-	// position => 테트리스 좌표값이다.
-	int position_y = 0;
-	int position_x = 3;
 
 	int count = 1;
 
@@ -132,26 +245,13 @@ int main()
 		// 키보드가 눌리는지 아닌지 판단.
 		if (_kbhit())  // dx 입력 부분
 		{
-			int ch;
-			ch = getch();
-			if (ch == 0xE0 || ch == 0)
-			{
-				ch = getch();
-				/*
-				if (ch == 72)
-				{// 위
-					dy = -1;
-				}
-				*/
-				if (ch == 75)
-				{// 왼쪽
-					dx = -1;
-				}
-				if(ch == 77)
-				{// 오른쪽
-					dx = 1;
-				}
-			}
+			input_keyboard();
+			// 키보드 입력받으면 움직여야한다.
+			// 함수로 분할시켜서 동작해야한다.
+			// (1)떨어지는것
+			// (2)좌우로 움직이는것
+			// (3)회전하는것 들을 일반화 해서 함수로 만들어야한다.
+
 		}
 		else
 		{
@@ -197,86 +297,23 @@ int main()
 			gotoxy(default_x + position_x, default_y + position_y);
 
 			// dy, dx 결정 부분
+			next_position_check();
 
-			for (int i = 0; i < form_height; i++)    
-			{
-				int is_dy_0 = 0;
-				
-				for (int j = 0; j < form_width; j++)
-				{
-					// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
-					// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
-					// 하지만 벽쪽에서는 dx가 0이 되야한다.
-					if (tetris_block[form_number][i][j] == '@')
-					{
-						if (tetris[position_y + i][position_x + j + dx] != ' ')
-						{
-							dx = 0;
-						}
-						if (tetris[position_y + i + 1][position_x + j] == ' ')
-						{
-							dy = 1;
-						}
-						else
-						{
-							dy = 0;
-							is_dy_0 = 1;
-							break;
-						}
-					}
-				}
-				if (is_dy_0 == 1)
-				{
-					break;
-				}
-			} 
-				// 움직이기
-
-			if (dy == 0)
-			{   // 테트리스 좌표에 직접 넣기
-				for (int i = 0; i < form_height; i++)
-				{
-					for (int j = 0; j < form_width; j++)
-					{
-						// 
-						if (tetris_block[form_number][i][j] == '@')
-						{
-							tetris[position_y + i][position_x + j] = '@';
-						}
-					}
-				}
-			}
-
-			for (int i = 0; i <= form_height; i++)
-			{ //  원래 있던 자리에 빈칸으로 채우기
-				for (int j = 0; j <= form_width; j++)
-				{
-					if (tetris_block[form_number][i][j] == '@')
-					{
-						putsxy(default_x + position_x + j, default_y + position_y + i, " ");
-
-					}
-				}
-			}
+			// 공백 삽입
+			input_void();
 
 			// 다음 위치
-			
 			position_x = position_x + dx;
 			position_y = position_y + dy;
 
-			
-			for (int i = 0; i <= form_height; i++)
-			{   // 움직일 자리로 움직임
-				for (int j = 0; j <= form_width; j++)
-				{
-					if (tetris_block[form_number][i][j] == '@')
-					{
-						putsxy(default_x + position_x + j, default_y + position_y + i, "@");
-					}
-				}
+			if (dy == 0)
+			{   // 테트리스 좌표에 직접 넣기
+				input_position();
 			}
+			// 보여주기
+			show_move();
 		}
-		delay(100);
+		delay(200);
 	}
 	return 0;
 }
