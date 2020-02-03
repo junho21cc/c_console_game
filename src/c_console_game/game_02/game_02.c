@@ -30,40 +30,107 @@ char tetris[21][11] = {
 	"#        #",
 	"##########",
 };
-
-char tetris_block[10][5][5] =
+// 블럭 형태, 회전 횟수, 세로, 가로
+char tetris_block[10][5][5][5] =
 {
-	{ // I형
+	{
+		{ // I형
+			"@",
+			"@",
+			"@",
+			"@"
+		},
+		{
+			"@@@@"
+		}
+	},
+	{
+		{ // ㅁ형
+			"@@",
+			"@@"
+		},
+	},
+	{
+		{ // L형
+			"@",
+			"@",
+			"@@"
+		},
+		{
+			"@@@",
+			"@"
+		},
+		{
+			"@@",
+			" @",
+			" @"
+		},
+		{
+			"  @",
+			"@@@"
+		}
+	},
+	{
+		{ // ㅗ형
+		" @",
+		"@@@"
+		},
+		{ 
 		"@",
-		"@",
-		"@",
+		"@@",
 		"@"
-	},
-	{ // ㅁ형
-		"@@",
-		"@@"
-	},
-	{ // L형
-		"@",
-		"@",
-		"@@"
-	},
-	{ // ㅗ형
+		},
+		{
+		"@@@",
+		" @ "
+		},
+		{
 		" @",
-		"@@@" 
-	},
-	{ // ㄱ형
 		"@@",
-		" @",
 		" @"
+		}
 	},
-	{ // Z형
+	{
+		{ // ㄱ형
+			"@@",
+			" @",
+			" @"
+		},
+		{
+			"  @",
+			"@@@"
+		},
+		{
+			"@",
+			"@",
+			"@@"
+		},
+		{
+			"@@@",
+			"@  "
+		}
+	},
+	{
+		{ // Z형
 		"@@",
 		" @@"
+		},
+		{
+		" @",
+		"@@",
+		"@"
+		}
 	},
-	{ // S형
-		" @@",
-		"@@"
+	{
+		{ // S형
+			" @@",
+			"@@"
+		},
+		{
+			"@",
+			"@@",
+			" @"
+		}
 	}
 };
 
@@ -82,9 +149,12 @@ int default_x = 10;
 int position_y = 0;
 int position_x = 3;
 
+// 
+int rotation_number = 0;
+
 void make_block()
 {
-	 form_number = rand() % 7;
+	 form_number = 4;
 	 form_width = 0;
 	 form_height = 0;
 
@@ -93,7 +163,7 @@ void make_block()
 	 {
 		 for (int j = 0; j < 5; j++)
 		 {
-			 if (tetris_block[form_number][i][j] == '@')
+			 if (tetris_block[form_number][rotation_number][i][j] == '@')
 			 {
 				 if (form_width <= j + 1)
 				 {
@@ -112,12 +182,59 @@ void input_keyboard()
 	if (ch == 0xE0 || ch == 0)
 	{
 		ch = getch();
-		/*
+		
 		if (ch == 72)
 		{// 위
-			dy = -1;
+			int A;
+
+			A = form_height;
+			form_height = form_width;
+			form_width = A;
+
+			rotation_number += 1;
+
+			switch (form_number - 1)
+			{
+			case 0:
+				
+				if (rotation_number > 1)
+				{
+					rotation_number = 0;
+				}
+				break;
+			case 2:
+				if (rotation_number > 3)
+				{
+					rotation_number = 0;
+				}
+				break;
+			case 3:
+				if (rotation_number > 3)
+				{
+					rotation_number = 0;
+				}
+				break;
+			case 4:
+				if (rotation_number > 3)
+				{
+					rotation_number = 0;
+				}
+				break;
+			case 5:
+				if (rotation_number > 1)
+				{
+					rotation_number = 0;
+				}
+				break;
+			case 6:
+				if (rotation_number > 1)
+				{
+					rotation_number = 0;
+				}
+				break;
+			}
 		}
-		*/
+		
 		if (ch == 75)
 		{// 왼쪽
 			dx = -1;
@@ -140,7 +257,7 @@ void next_position_check()
 			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
 			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
 			// 하지만 벽쪽에서는 dx가 0이 되야한다.
-			if (tetris_block[form_number][i][j] == '@')
+			if (tetris_block[form_number][rotation_number][i][j] == '@')
 			{
 				if (tetris[position_y + i][position_x + j + dx] != ' ')
 				{
@@ -172,7 +289,7 @@ void input_position()
 		for (int j = 0; j < form_width; j++)
 		{
 			// 
-			if (tetris_block[form_number][i][j] == '@')
+			if (tetris_block[form_number][rotation_number][i][j] == '@')
 			{
 				tetris[position_y + i][position_x + j] = '@';
 			}
@@ -186,7 +303,8 @@ void input_void()
 	{ //  원래 있던 자리에 빈칸으로 채우기
 		for (int j = 0; j <= form_width; j++)
 		{
-			if (tetris_block[form_number][i][j] == '@')
+			// 빈자리로 채우는것 수정해야됨 => 회전시키면 이물질 생겨
+			if (tetris_block[form_number][rotation_number - 1][i][j] == '@')
 			{
 				putsxy(default_x + position_x + j, default_y + position_y + i, " ");
 
@@ -201,7 +319,7 @@ void show_move()
 	{   // 움직일 자리로 움직임
 		for (int j = 0; j <= form_width; j++)
 		{
-			if (tetris_block[form_number][i][j] == '@')
+			if (tetris_block[form_number][rotation_number][i][j] == '@')
 			{
 				putsxy(default_x + position_x + j, default_y + position_y + i, "@");
 			}
