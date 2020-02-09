@@ -30,8 +30,9 @@ char tetris[21][11] = {
 	"#        #",
 	"##########",
 };
+
 // 블럭 형태, 회전 횟수, 세로, 가로
-char tetris_block[10][5][5][5] =
+char tetris_block[7][4][5][5] =
 {
 	{
 		{ // I형
@@ -136,10 +137,15 @@ char tetris_block[10][5][5][5] =
 
 int dx = 0;
 int dy = 1;
+int dr = 0;
 
+// 블럭에 관한 정보들이다.
 int form_number;
 int form_width = 0;
 int form_height = 0;
+
+// 회전 횟수이다.
+int rotation_number = 0;
 
 // default => 보여주는 좌표값의 기본값이다.
 int default_y = 4;
@@ -149,19 +155,18 @@ int default_x = 10;
 int position_y = 0;
 int position_x = 3;
 
-// 
-int rotation_number = 0;
-
+// 7개의 무작위 모양 중에서 하나를 선택해 최대 가로 길이와 최대 세로 길이를 구한다.
 void make_block()
 {
-	 form_number = 4;
+	srand(time(NULL));
+	 form_number = rand()%7;
 	 form_width = 0;
 	 form_height = 0;
 
 	 // 블럭 모양의 가로와 세로 길이 구하기
-	 for (int i = 0; i < 5; i++)
+	 for (int i = 0; i < 4; i++)
 	 {
-		 for (int j = 0; j < 5; j++)
+		 for (int j = 0; j < 4; j++)
 		 {
 			 if (tetris_block[form_number][rotation_number][i][j] == '@')
 			 {
@@ -174,7 +179,36 @@ void make_block()
 		 }
 	 }
 }
+// 모양에 따라서 회전하는 주기가 다르기때문에  스위치를 사용해서 회전 주기를 맞춰준다.
+void rotation_form_is_right()
+{
+	switch (form_number)
+	{
+	case 0:
+	case 5:
+	case 6:
+		if (rotation_number > 1)
+		{
+			rotation_number = 0;
+		}
+		break;
+	case 2:
+	case 3:
+	case 4:
+		if (rotation_number > 3)
+		{
+			rotation_number = 0;
+		}
+		break;
+	}
+}
+// 회전시키는걸 함수를 하나 만들어서 비교한다
+// 이전와 나중을 비교하는것 --> rotationumber를 나중과 이전, 1차이나는것을 비교한다.
+// 좌우로 움직이는것과 아래로 떨어지면서 모양이 바뀌는거니까 따로 비교한다.
+// rn이 바뀐다는것은 최대 가로길이와 세로 길이가 바뀐다는것이다.
+// deltarotationumber 이 0이될 조건 --> 나중모양이 위치할 곳에 빈칸이 있으면 가능, 한개라도 없으면 불가능
 
+// 키보드를 입력받을때, 어떤 키보드가 입력이 되었는지에 따라서 좌우로 움직이거나 회전한다.
 void input_keyboard()
 {
 	int ch;
@@ -182,106 +216,73 @@ void input_keyboard()
 	if (ch == 0xE0 || ch == 0)
 	{
 		ch = getch();
-		
-		if (ch == 72)
-		{// 위
-			int A;
-
-			A = form_height;
-			form_height = form_width;
-			form_width = A;
-
-			rotation_number += 1;
-
-			switch (form_number - 1)
-			{
-			case 0:
-				
-				if (rotation_number > 1)
-				{
-					rotation_number = 0;
-				}
-				break;
-			case 2:
-				if (rotation_number > 3)
-				{
-					rotation_number = 0;
-				}
-				break;
-			case 3:
-				if (rotation_number > 3)
-				{
-					rotation_number = 0;
-				}
-				break;
-			case 4:
-				if (rotation_number > 3)
-				{
-					rotation_number = 0;
-				}
-				break;
-			case 5:
-				if (rotation_number > 1)
-				{
-					rotation_number = 0;
-				}
-				break;
-			case 6:
-				if (rotation_number > 1)
-				{
-					rotation_number = 0;
-				}
-				break;
-			}
-		}
-		
-		if (ch == 75)
-		{// 왼쪽
+		switch (ch)
+		{
+		case 72:
+			dr = 1;
+			break;
+		case 75:
 			dx = -1;
-		}
-		if (ch == 77)
-		{// 오른쪽
+			break;
+		case 77:
 			dx = 1;
-		}
-	}
-}
-
-void next_position_check()
-{
-	for (int i = 0; i < form_height; i++)
-	{
-		int is_dy_0 = 0;
-
-		for (int j = 0; j < form_width; j++)
-		{
-			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
-			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
-			// 하지만 벽쪽에서는 dx가 0이 되야한다.
-			if (tetris_block[form_number][rotation_number][i][j] == '@')
-			{
-				if (tetris[position_y + i][position_x + j + dx] != ' ')
-				{
-					dx = 0;
-				}
-				if (tetris[position_y + i + 1][position_x + j] == ' ')
-				{
-					dy = 1;
-				}
-				else
-				{
-					dy = 0;
-					is_dy_0 = 1;
-					break;
-				}
-			}
-		}
-		if (is_dy_0 == 1)
-		{
 			break;
 		}
 	}
 }
 
+void rotation_form()
+{
+	int A = form_width;
+	form_width = form_height;
+	form_height = A;
+
+	rotation_number = rotation_number + dr;
+	rotation_form_is_right();
+}
+
+// 테트리스 블럭의 @이가 있는 부분이 움직일때 움직이려는 칸이 빈칸이여야 하고, 빈칸이 아니라면 dx나 dy가 0이 된다.
+// 회전된 경우에 빈칸이 아닌 다른 문자가 있다면, 회전을 하면 안된다. 
+void next_position_check()
+{
+	for (int i = 0; i < form_height; i++)
+	{
+		for (int j = 0; j < form_width; j++)
+		{
+			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
+			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
+			// 하지만 벽쪽에서는 dx가 0이 되야한다.
+			
+			if (tetris_block[form_number][rotation_number][i][j] == '@')
+			{
+				if (dx != 0)
+				{
+					if (tetris[position_y + i][position_x + j + dx] != ' ')
+					{
+						dx = 0;
+						dr = 0;
+					}
+				}
+				if (dy != 0)
+				{
+					if (tetris[position_y + i + 1][position_x + j] == ' ')
+					{
+						dy = 1;
+					}
+					else
+					{
+						dy = -1;
+						dr = 0;
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+// 좌표에 넣어주는 함수
 void input_position()
 {
 	for (int i = 0; i < form_height; i++)
@@ -297,15 +298,16 @@ void input_position()
 	}
 }
 
+// 이전상태를 지워주는 함수
+// 이전상태와 바뀐상태를 비교해야 한다. 
 void input_void()
 {
 	for (int i = 0; i <= form_height; i++)
 	{ //  원래 있던 자리에 빈칸으로 채우기
 		for (int j = 0; j <= form_width; j++)
 		{
-			// 빈자리로 채우는것 수정해야됨 => 회전시키면 이물질 생겨
-			if (tetris_block[form_number][rotation_number - 1][i][j] == '@')
-			{
+			if (tetris_block[form_number][rotation_number][i][j] == '@')
+			{ 
 				putsxy(default_x + position_x + j, default_y + position_y + i, " ");
 
 			}
@@ -313,11 +315,12 @@ void input_void()
 	}
 }
 
+// 바뀐상태를 보여주는 함수
 void show_move()
 {
-	for (int i = 0; i <= form_height; i++)
+	for (int i = 0; i < form_height; i++)
 	{   // 움직일 자리로 움직임
-		for (int j = 0; j <= form_width; j++)
+		for (int j = 0; j < form_width; j++)
 		{
 			if (tetris_block[form_number][rotation_number][i][j] == '@')
 			{
@@ -330,15 +333,6 @@ void show_move()
 
 int main()
 {
-	// 함수로 바꾸기?
-	// 라인 클리어 어떻게?
-	//	--> 한줄 만들어지면  지우고 한줄씩 밑으로 내리자. 
-	// 회전 하기 
-	//   1. 중심점찾기
-	//   2. 중심점 기준해서 시계방향으로 회전 시키기
-	//   3. 최대 가로길이와 최대 세로 길이를 서로 바꾼다
-	//   4. 모양을 바꾼다.
-
 	gotoxy(0, 4);
 	for (int i = 0; i < 20; i++)
 	{
@@ -352,71 +346,43 @@ int main()
 
 	for (;;)
 	{
-		// 못 움직이는경우에만 초기화 시킴.
-		if (dy == 0)
-		{
-			// 블럭을 떨어뜨리기 위해서 원래 위치로 올린다. 
-			position_y = 0;
-			position_x = 4;
-			make_block();
-		}
 		// 키보드가 눌리는지 아닌지 판단.
 		if (_kbhit())  // dx 입력 부분
 		{
 			input_keyboard();
-			// 키보드 입력받으면 움직여야한다.
-			// 함수로 분할시켜서 동작해야한다.
-			// (1)떨어지는것
-			// (2)좌우로 움직이는것
-			// (3)회전하는것 들을 일반화 해서 함수로 만들어야한다.
-
 		}
 		else
 		{
 			dx = 0;
+			dr = 0;
 		}
 
 		count++;
 
-		if (count == 3)
+		if (count == 5)
 		{
 			count = 1;
-			/*
-			if (tetris[position_y - form_height - 1][1] == ' ')
-			{
-				for (int i = 0; i < form_height; i++)
-				{
-					putsxy(position_x, position_y - 1, "     ");
-				}
-				for (int i = 0; i < form_height; i++)
-				{
-					gotoxy(position_x+ dx, position_y + i);
-					printf("%s\n", tetris_block[form_number][i]);
-				}
-				// 한칸씩 밑으로
-				position_y = position_y + 1;
-				position_x = position_x + dx;
-			}
-			else
-			{
-				position_y = 4;
-				make_block();
-			}
-			*/
-			/*
-			블럭이 아래로 떨어지는 알고리즘
-			1. 블럭들의 현재위치에 X좌표, Y좌표를 구한다
-			2. 블럭안에 @들이 떨어지려는 방향에  움직이려는 칸이 빈칸이여만 움직임
-				낙하는 무조건 하는 일
-			3. 움직이려는 방향의 움직이려는 칸에 #이나 @이 존재하면 안됨 !!
-			4. 각 블럭의 인덱스마다 비교를 해야됨. (그리기만 함, TETRIS에 직접 적용하지 않음)
-			*/
+			dy = 1;
+		}
+		else
+		{
+			dy = 0;
+		}
+		// dy, dx 결정 부분
+		next_position_check();
 
-			gotoxy(default_x + position_x, default_y + position_y);
+		if (dy == -1)
+		{   // 테트리스 좌표에 직접 넣기
+			input_position();
 
-			// dy, dx 결정 부분
-			next_position_check();
+			dy = 0;
+			position_y = 0;
+			position_x = 4;
 
+			make_block();
+		}
+		if (dx != 0 || dy != 0 || dr != 0)
+		{
 			// 공백 삽입
 			input_void();
 
@@ -424,14 +390,27 @@ int main()
 			position_x = position_x + dx;
 			position_y = position_y + dy;
 
-			if (dy == 0)
-			{   // 테트리스 좌표에 직접 넣기
-				input_position();
+			if (rotation_number != rotation_number + dr)
+			{
+				rotation_form();
 			}
+
 			// 보여주기
 			show_move();
 		}
-		delay(200);
+		delay(100);
 	}
 	return 0;
 }
+
+// 변화되는 것들
+// dx가 변하는것은 좌우가 움직이는것
+// dy가 움직이는것은 count, 시간에 따라서 움직이는것
+// rotation이 변하는것은 키보드를 입력받을때 움직임 => dx가 변하는것과 동일하게 움직인다.
+// rotation에 관하여...
+// 이전상태  -> 지우기 ->  바뀐상태
+// 바뀐상태와 이전상태가 같으면 지우지 않아도 된다
+// +) rotation 변화까지 생각
+
+// 이제는 회전시킬때, 변하면 안되는 경우가 있을수 있으니까 그것을 마무리 하고난다음에...
+// 한줄 다 채우면 없어지는것을 만들어야지
