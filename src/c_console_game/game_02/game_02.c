@@ -184,22 +184,25 @@ void rotation_form_is_right()
 {
 	switch (form_number)
 	{
-	case 0:
-	case 5:
-	case 6:
-		if (rotation_number > 1)
-		{
+		case 0:
+		case 5:
+		case 6:
+			if (rotation_number > 1)
+			{
+				rotation_number = 0;
+			}
+			break;
+		case 2:
+		case 3:
+		case 4:
+			if (rotation_number > 3)
+			{
+				rotation_number = 0;
+			}
+			break;
+		case 1:
 			rotation_number = 0;
-		}
-		break;
-	case 2:
-	case 3:
-	case 4:
-		if (rotation_number > 3)
-		{
-			rotation_number = 0;
-		}
-		break;
+			break;
 	}
 }
 // 회전시키는걸 함수를 하나 만들어서 비교한다
@@ -238,6 +241,7 @@ void rotation_form()
 	form_height = A;
 
 	rotation_number = rotation_number + dr;
+
 	rotation_form_is_right();
 }
 
@@ -252,7 +256,10 @@ void next_position_check()
 			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
 			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
 			// 하지만 벽쪽에서는 dx가 0이 되야한다.
-			
+
+			// 회전시 안되는 경우를 위해서는 어떡해 해야할까
+			// rotation_number에 대해서  dr이 1이라면, 다음모양을  확인 해봐야 한다.
+
 			if (tetris_block[form_number][rotation_number][i][j] == '@')
 			{
 				if (dx != 0)
@@ -381,6 +388,7 @@ int main()
 
 			make_block();
 		}
+
 		if (dx != 0 || dy != 0 || dr != 0)
 		{
 			// 공백 삽입
