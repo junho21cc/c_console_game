@@ -191,6 +191,10 @@ void rotation_form_is_right()
 			{
 				rotation_number = 0;
 			}
+			else if (rotation_number < 0)
+			{
+				rotation_number = 1;
+			}
 			break;
 		case 2:
 		case 3:
@@ -198,6 +202,10 @@ void rotation_form_is_right()
 			if (rotation_number > 3)
 			{
 				rotation_number = 0;
+			}
+			else if (rotation_number < 0)
+			{
+				rotation_number = 3;
 			}
 			break;
 		case 1:
@@ -216,6 +224,7 @@ void input_keyboard()
 {
 	int ch;
 	ch = getch();
+	dr = dx = dy = 0;
 	if (ch == 0xE0 || ch == 0)
 	{
 		ch = getch();
@@ -240,47 +249,111 @@ void rotation_form()
 	form_width = form_height;
 	form_height = A;
 
-	rotation_number = rotation_number + dr;
+	rotation_number = rotation_number+ dr;
+
+	rotation_form_is_right();
+}
+
+void rotation_form_back()
+{
+	int A = form_width;
+	form_width = form_height;
+	form_height = A;
+
+	rotation_number = rotation_number - dr;
 
 	rotation_form_is_right();
 }
 
 // 테트리스 블럭의 @이가 있는 부분이 움직일때 움직이려는 칸이 빈칸이여야 하고, 빈칸이 아니라면 dx나 dy가 0이 된다.
 // 회전된 경우에 빈칸이 아닌 다른 문자가 있다면, 회전을 하면 안된다. 
-void next_position_check()
+
+void next_form_check()
 {
+	if (dr != 0)
+	{
+		rotation_form();
+	}
 	for (int i = 0; i < form_height; i++)
 	{
 		for (int j = 0; j < form_width; j++)
 		{
-			// 블럭의 @가 움직일 방향에 빈칸이 있는경우에만 움직일수 있도록 함.
-			// 아래로 무조건 떨어지는 것, 좌우로 움직이는것은 떨어지는거에 영향을 받지 않는다.
-			// 하지만 벽쪽에서는 dx가 0이 되야한다.
-
-			// 회전시 안되는 경우를 위해서는 어떡해 해야할까
-			// rotation_number에 대해서  dr이 1이라면, 다음모양을  확인 해봐야 한다.
-
-			if (tetris_block[form_number][rotation_number][i][j] == '@')
+			if (tetris[position_y + i][position_x + j] != ' ')
 			{
-				if (dx != 0)
+				dr = 0;
+				return;
+			}
+		}
+	}
+}
+
+void next_position_check()
+{
+	if (dr != 0)
+	{
+		rotation_form();
+
+		for (int i = 0; i < form_height; i++)
+		{
+			for (int j = 0; j < form_width; j++)
+			{
+				if (tetris_block[form_number][rotation_number][i][j] == '@')
 				{
-					if (tetris[position_y + i][position_x + j + dx] != ' ')
+					if (tetris[position_y + i][position_x + j] != ' ')
 					{
-						dx = 0;
 						dr = 0;
+						rotation_form_back();
+						return;
 					}
 				}
-				if (dy != 0)
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < form_height; i++)
+		{
+			for (int j = 0; j < form_width; j++)
+			{
+				// dx, dy, dr은 개별 처리
+
+				/*
+
+				 회전시 안되는 경우
+				1. 만약 dr이 1일때, 현재위치에서의 rotation_number를 +1 해준상태가 벽을 침범할때.
+
+				 조건 1. if(dr == 1) or if(dr != 0)
+					--> dr이 1일때
+
+				 조건 2. if(tetris_block[form_number][rotation_number + dr][i][j] == '@')
+					--> rotation_number + 1이 된 상태에서 @가 존재하는(실질적인 블록 형태를 띄는) 칸에서부터
+
+				 조건 3. if(tetris[position_y + i][position_x + j] != ' ')
+					--> 다음형태가 들어설 곳에 공백이 없다면
+				 결과 : dr = 0;
+
+				*/
+
+				if (tetris_block[form_number][rotation_number][i][j] == '@')
 				{
-					if (tetris[position_y + i + 1][position_x + j] == ' ')
+					if (dx != 0)
 					{
-						dy = 1;
+						if (tetris[position_y + i][position_x + j + dx] != ' ')
+						{
+							dx = 0;
+						}
 					}
-					else
+					if (dy != 0)
 					{
-						dy = -1;
-						dr = 0;
-						return;
+						if (tetris[position_y + i + dy][position_x + j] == ' ')
+						{
+							dy = 1;
+						}
+						else
+						{
+							dy = -1;
+							return;
+						}
 					}
 				}
 			}
@@ -358,11 +431,6 @@ int main()
 		{
 			input_keyboard();
 		}
-		else
-		{
-			dx = 0;
-			dr = 0;
-		}
 
 		count++;
 
@@ -375,6 +443,7 @@ int main()
 		{
 			dy = 0;
 		}
+
 		// dy, dx 결정 부분
 		next_position_check();
 
@@ -397,11 +466,6 @@ int main()
 			// 다음 위치
 			position_x = position_x + dx;
 			position_y = position_y + dy;
-
-			if (rotation_number != rotation_number + dr)
-			{
-				rotation_form();
-			}
 
 			// 보여주기
 			show_move();
