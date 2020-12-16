@@ -199,9 +199,12 @@ int main()
 
 				char mc[10];
 				sprintf_s(mc, sizeof(mc), "%d", moving_count);
+				char kb[10];
+				sprintf_s(kb, sizeof(kb), "%d", ch);
 
 				putsxy(45, 4, "움직인횟수");
 				putsxy(45, 5, mc);
+				putsxy(45, 7, kb);
 
 				// 점 살리기
 				if (stage[stage_level][y][x] == '.')

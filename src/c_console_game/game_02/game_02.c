@@ -243,6 +243,7 @@ void input_keyboard()
 	}
 }
 
+// dr이 
 void rotation_form()
 {
 	int A = form_width;
@@ -270,6 +271,8 @@ void rotation_form_back()
 
 void next_form_check()
 {
+	// 내생각에는 dr이 0보다 작은경우와 큰경우 모두 같은 함수로 가는게 맞다고 생각한다.
+	// rotation_number = rotation_number + dr;
 	if (dr != 0)
 	{
 		rotation_form();
@@ -468,7 +471,7 @@ int main()
 			position_y = position_y + dy;
 
 			// 보여주기
-			show_move();
+			show_move(); 
 		}
 		delay(100);
 	}
