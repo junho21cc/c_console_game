@@ -187,13 +187,13 @@ void rotation_form_is_right()
 		case 0:
 		case 5:
 		case 6:
-			if (rotation_number > 1)
+			if (rotation_number > 0)
 			{
 				rotation_number = 0;
 			}
 			else if (rotation_number < 0)
 			{
-				rotation_number = 1;
+				rotation_number = 0;
 			}
 			break;
 		case 2:
@@ -250,19 +250,6 @@ void rotation_form()
 	form_width = form_height;
 	form_height = A;
 
-	rotation_number = rotation_number+ dr;
-
-	rotation_form_is_right();
-}
-
-void rotation_form_back()
-{
-	int A = form_width;
-	form_width = form_height;
-	form_height = A;
-
-	rotation_number = rotation_number - dr;
-
 	rotation_form_is_right();
 }
 
@@ -294,23 +281,8 @@ void next_position_check()
 {
 	if (dr != 0)
 	{
+		rotation_number += dr;
 		rotation_form();
-
-		for (int i = 0; i < form_height; i++)
-		{
-			for (int j = 0; j < form_width; j++)
-			{
-				if (tetris_block[form_number][rotation_number][i][j] == '@')
-				{
-					if (tetris[position_y + i][position_x + j] != ' ')
-					{
-						dr = 0;
-						rotation_form_back();
-						return;
-					}
-				}
-			}
-		}
 	}
 	else
 	{
@@ -434,18 +406,11 @@ int main()
 		{
 			input_keyboard();
 		}
-
-		count++;
-
-		if (count == 5)
-		{
-			count = 1;
-			dy = 1;
-		}
 		else
 		{
-			dy = 0;
+			dy = 1;
 		}
+
 
 		// dy, dx 결정 부분
 		next_position_check();
