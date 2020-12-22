@@ -4,11 +4,13 @@
 #include<time.h>
 #include<conio.h>
 #include<malloc.h>
+#include<windows.h>
 #include"Screen.h"
 
 clock_t FPSCurTime, FPSOldTime;
 int FrameCnt;
 char* FPSTextBuffer;
+int hero_x, hero_y;
 
 void Init()
 {
@@ -16,6 +18,8 @@ void Init()
     FPSTextBuffer = (char*)malloc(sizeof(char) * 10);
     sprintf(FPSTextBuffer, "FPS:%d", FrameCnt);
     FPSOldTime = clock();
+    hero_x = 10;
+    hero_y = 10;
 }
 
 void Update()
@@ -28,6 +32,8 @@ void Render()
     //출력코드
     FrameCnt++;
     FPSCurTime = clock();
+
+    ScreenPrint(hero_x, hero_y, "A");
     if (FPSCurTime - FPSOldTime >= 1000)
     {
         sprintf(FPSTextBuffer, "FPS:%d", FrameCnt);
@@ -36,6 +42,7 @@ void Render()
     }
 
     ScreenPrint(0, 0, FPSTextBuffer);
+
 
     //ScreenPrint(0, 0, FPSTextBuffer);
     ScreenFlipping();
@@ -63,8 +70,16 @@ int main()
             switch (nKey)
             {
             case 'j':
+                hero_x -= 1;
                 break;
             case 'l':
+                hero_x += 1;
+                break;
+            case 'k':
+                hero_y += 1;
+                break;
+            case 'i':
+                hero_y -= 1;
                 break;
             }
         }

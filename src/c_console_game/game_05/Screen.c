@@ -1,7 +1,7 @@
 #include <windows.h>
 
-static int g_nScreenIndex;
-static HANDLE g_hScreen[2];
+ static int g_nScreenIndex;
+ static HANDLE g_hScreen[2];
 
 void ScreenInit()
 {
@@ -30,7 +30,8 @@ void ScreenClear()
 {
     COORD Coor = { 0,0 };
     DWORD dw;
-    FillConsoleOutputCharacter(g_hScreen[g_nScreenIndex], ' ', 80 * 25, Coor, &dw);
+    COORD size = GetLargestConsoleWindowSize(g_hScreen[g_nScreenIndex]);
+       FillConsoleOutputCharacter(g_hScreen[g_nScreenIndex], ' ', size.X * size.Y, Coor, &dw);
 }
 
 void ScreenRelease()
