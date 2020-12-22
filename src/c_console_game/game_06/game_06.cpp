@@ -1,8 +1,18 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
+
+#define CHAR_185    '+'
+#define CHAR_186    '|'
+#define CHAR_187    '+'
+#define CHAR_188    '+'
+#define CHAR_176    '@'
+#define CHAR_200    '+'
+#define CHAR_201    '+'
+#define CHAR_204    '+'
+#define CHAR_205    '-'
+
 
 #define gotoXY(X,Y) SetConsoleCursorPosition(console, {short(Y), short(X)})
 
@@ -240,31 +250,31 @@ public:
         int n(0);
 
         /// Top of frame
-        game[n++] = char(201);
+        game[n++] = char(CHAR_201);
         for (int i(0); i < width * 3; ++i)
-            game[n++] = char(205);
-        game[n++] = char(187);
+            game[n++] = char(CHAR_205);
+        game[n++] = char(CHAR_187);
         gotoXY(cX, cY);
         puts(game);
         n = 0;
 
         /// Score
-        game[n++] = char(186);
+        game[n++] = char(CHAR_186);
         for (int i(0); i < 8; ++i)
             game[n++] = " Opened:"[i];
         for (int i(0); i < width * 3 - 8; ++i)
             game[n++] = ' ';
-        game[n++] = char(186);
+        game[n++] = char(CHAR_186);
         gotoXY(cX + 1, cY);
         puts(game);
         PrintScore();
         n = 0;
 
         /// Border
-        game[n++] = char(204);
+        game[n++] = char(CHAR_204);
         for (int i(0); i < width * 3; i++)
-            game[n++] = char(205);
-        game[n++] = char(185);
+            game[n++] = char(CHAR_205);
+        game[n++] = char(CHAR_185);
         gotoXY(cX + 2, cY);
         puts(game);
         n = 0;
@@ -272,7 +282,7 @@ public:
         /// Game
         for (int i(0); i < height; ++i) {
             gotoXY(cX + 3 + i, cY);
-            putchar(186);
+            putchar(CHAR_186);
             for (int j(0); j < width; ++j) {
                 if (i == fX && j == fY && mat[i][j].shown && mat[i][j].value == -1) {
                     SetConsoleTextAttribute(console, (0 << 4) + 12);
@@ -296,18 +306,18 @@ public:
                     putchar('#');
                     SetConsoleTextAttribute(console, (0 << 4) + 7);
                 }
-                else putchar(176);
+                else putchar(CHAR_176);
 
                 putchar(']');
             }
-            putchar(186);
+            putchar(CHAR_186);
         }
 
         /// Bottom of frame
-        game[n++] = char(200);
+        game[n++] = char(CHAR_200);
         for (int i(0); i < width * 3; i++)
-            game[n++] = char(205);
-        game[n++] = char(188);
+            game[n++] = char(CHAR_205);
+        game[n++] = char(CHAR_188);
         gotoXY(cX + height + 3, cY);
         puts(game);
 
@@ -330,7 +340,7 @@ public:
                 putchar('#');
                 SetConsoleTextAttribute(console, (0 << 4) + 7);
             }
-            else putchar(176);
+            else putchar(CHAR_176);
         }
     }
     void PrintScore() {
@@ -351,21 +361,21 @@ void PrintMenu(int x, int y, int n) {
 
     /// Top of frame
     gotoXY(x, y);
-    putchar(201);
-    for (int i(0); i < 37; ++i) putchar(205);
-    putchar(187);
+    putchar(CHAR_201);
+    for (int i(0); i < 37; ++i) putchar(CHAR_205);
+    putchar(CHAR_187);
 
     /// Menu
     for (int i(0); i < 6; ++i) {
         gotoXY(x + i + 1, y);
-        printf("%c%s%c\n", 186, menuStr[i], 186);
+        printf("%c%s%c\n", CHAR_186, menuStr[i], CHAR_186);
     }
 
     /// Bottom of frame
     gotoXY(x + 7, y);
-    putchar(200);
-    for (int i(0); i < 37; ++i) putchar(205);
-    putchar(188);
+    putchar(CHAR_200);
+    for (int i(0); i < 37; ++i) putchar(CHAR_205);
+    putchar(CHAR_188);
 
     gotoXY(x + n + 2, y + 2);
     putchar('>');
