@@ -138,10 +138,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Fps.c" />
     <ClCompile Include="game_05.c" />
     <ClCompile Include="Screen.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Fps.h" />
     <ClInclude Include="Screen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
