@@ -1,23 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include<stdio.h>
-#include<time.h>
-#include<conio.h>
-#include<malloc.h>
-#include<windows.h>
-#include"Screen.h"
+#include <stdio.h>
+#include <time.h>
+#include <conio.h>
+#include <malloc.h>
+#include <windows.h>
+#include "Screen.h"
+#include "Fps.h"
 
-clock_t FPSCurTime, FPSOldTime;
-int FrameCnt;
-char* FPSTextBuffer;
+FPSData* fpsData;
 int hero_x, hero_y;
 
 void Init()
 {
-    FrameCnt = 0;
-    FPSTextBuffer = (char*)malloc(sizeof(char) * 10);
-    sprintf(FPSTextBuffer, "FPS:%d", FrameCnt);
-    FPSOldTime = clock();
+    InitFPSData(&fpsData);
     hero_x = 10;
     hero_y = 10;
 }
@@ -29,28 +25,31 @@ void Update()
 void Render()
 {
     ScreenClear();
-    //출력코드
-    FrameCnt++;
-    FPSCurTime = clock();
+    DrawFPS(&fpsData);
 
     ScreenPrint(hero_x, hero_y, "A");
-    if (FPSCurTime - FPSOldTime >= 1000)
-    {
-        sprintf(FPSTextBuffer, "FPS:%d", FrameCnt);
-        FPSOldTime = clock();
-        FrameCnt = 0;
-    }
 
-    ScreenPrint(0, 0, FPSTextBuffer);
-
-
-    //ScreenPrint(0, 0, FPSTextBuffer);
     ScreenFlipping();
 }
 
 void Release()
 {
-    free(FPSTextBuffer);
+    DestoyFPSData(&fpsData);
+}
+
+void WaitRender(clock_t OldTime)
+{
+
+}
+
+int GetKeyEvent()
+{
+
+}
+
+void KeyProcess(int key)
+{
+
 }
 
 int main()
