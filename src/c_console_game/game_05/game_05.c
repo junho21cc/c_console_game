@@ -39,17 +39,40 @@ void Release()
 
 void WaitRender(clock_t OldTime)
 {
-
+    clock_t CurTime;
+    while (1)
+    {
+        CurTime = clock();
+        if (CurTime - OldTime > 33)
+            break;
+    }
 }
 
 int GetKeyEvent()
 {
+    if (_kbhit())
+        return _getch();
 
+    return -1;
 }
 
 void KeyProcess(int key)
 {
-
+    switch (key)
+    {
+    case 'j':
+        hero_x -= 1;
+        break;
+    case 'l':
+        hero_x += 1;
+        break;
+    case 'k':
+        hero_y += 1;
+        break;
+    case 'i':
+        hero_y -= 1;
+        break;
+    }
 }
 
 int main()
@@ -61,36 +84,13 @@ int main()
 
     while (1)
     {
-        if (_kbhit())
-        {
-            nKey = _getch();
-            if (nKey == 'q')
-                break;
-            switch (nKey)
-            {
-            case 'j':
-                hero_x -= 1;
-                break;
-            case 'l':
-                hero_x += 1;
-                break;
-            case 'k':
-                hero_y += 1;
-                break;
-            case 'i':
-                hero_y -= 1;
-                break;
-            }
-        }
-        OldTime = clock();
+        int nKey = GetKeyEvent();
+        if (nKey == 'q')
+            break;
+        KeyProcess(nKey);
         Update();//데이터 갱신
         Render();//화면 출력
-        while (1)
-        {
-            CurTime = clock();
-            if (CurTime - OldTime > 20)
-                break;
-        }
+        WaitRender(clock());
     }
     Release();//해제
     ScreenRelease();
