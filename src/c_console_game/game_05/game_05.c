@@ -56,6 +56,33 @@ int GetKeyEvent()
     return -1;
 }
 
+int GetConsoleInput(INPUT_RECORD* pir)
+{
+    DWORD numRead;
+    ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), pir, 1, &numRead);
+    if (numRead > 0) {
+        /*
+        if (pir->EventType == KEY_EVENT)
+            OutputDebugStringA("KEY_EVENT\n");
+        else if (pir->EventType == MOUSE_EVENT)
+            OutputDebugStringA("MOUSE_EVENT\n");
+        */
+        return 1;
+    }
+    return 0;
+}
+
+int InputProcess(INPUT_RECORD* pir)
+{
+    if (pir->EventType == KEY_EVENT && !pir->Event.KeyEvent.bKeyDown && pir->Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE)
+        return 1;
+    if (pir->EventType == MOUSE_EVENT /*&& pir->Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED*/) {
+        hero_x = pir->Event.MouseEvent.dwMousePosition.X;
+        hero_y = pir->Event.MouseEvent.dwMousePosition.Y;
+    }
+    return 0;
+}
+
 void KeyProcess(int key)
 {
     switch (key)
@@ -78,16 +105,25 @@ void KeyProcess(int key)
 int main()
 {
     int nKey;
+    INPUT_RECORD ir;
     clock_t CurTime, OldTime;
     ScreenInit();
     Init();//초기화
 
     while (1)
     {
+        if (GetConsoleInput(&ir))
+        {
+            if (InputProcess(&ir))
+                break;
+        }
+
+        /*
         int nKey = GetKeyEvent();
         if (nKey == 'q')
             break;
         KeyProcess(nKey);
+        */
         Update();//데이터 갱신
         Render();//화면 출력
         WaitRender(clock());

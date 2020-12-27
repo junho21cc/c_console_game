@@ -2,6 +2,7 @@
 
  static int g_nScreenIndex;
  static HANDLE g_hScreen[2];
+ static DWORD g_OldConsoleMode, g_ConsoleMode;
 
 void ScreenInit()
 {
@@ -18,6 +19,11 @@ void ScreenInit()
     cci.bVisible = FALSE;
     SetConsoleCursorInfo(g_hScreen[0], &cci);
     SetConsoleCursorInfo(g_hScreen[1], &cci);
+
+    GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &g_OldConsoleMode);
+    g_ConsoleMode = g_OldConsoleMode | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT;
+    g_ConsoleMode &= ~ENABLE_QUICK_EDIT_MODE & ~ENABLE_INSERT_MODE;
+    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_ConsoleMode);
 }
 
 void ScreenFlipping()
@@ -38,6 +44,7 @@ void ScreenRelease()
 {
     CloseHandle(g_hScreen[0]);
     CloseHandle(g_hScreen[1]);
+    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_OldConsoleMode);
 }
 
 void ScreenPrint(int x, int y, char* string)
