@@ -7,19 +7,36 @@
 #include <windows.h>
 #include "Screen.h"
 #include "Fps.h"
+#include "Missile.h"
 
 FPSData* fpsData;
 int hero_x, hero_y;
+
+Missile m;
 
 void Init()
 {
     InitFPSData(&fpsData);
     hero_x = 10;
     hero_y = 10;
+
+    MissileDestroy(&m);
 }
 
 void Update()
 {
+    clock_t CurTime = clock();
+    
+    if (CurTime - m.move_time > m.velocity)
+    {
+        m.y--;
+        m.move_time = CurTime;
+
+        if (m.y < -1)
+        {
+            MissileDestroy(&m);
+        }
+    }
 }
 
 void Render()
@@ -28,6 +45,11 @@ void Render()
     DrawFPS(&fpsData);
 
     ScreenPrint(hero_x, hero_y, "A");
+
+    if (m.x >= 0 && m.y >= 0)
+    {
+        ScreenPrint(m.x, m.y, "^");
+    }
 
     ScreenFlipping();
 }
@@ -78,6 +100,9 @@ int KeyProcess(int key)
     case 'i':
         hero_y -= 1;
         break;
+    case 'a':
+        m = MissileCreate(hero_x, hero_y - 1, 200);
+        break;
     }
     return 0;
 }
@@ -88,6 +113,7 @@ int main()
     clock_t CurTime, OldTime;
     ScreenInit();
     Init();//√ ±‚»≠
+    
 
     while (1)
     {
