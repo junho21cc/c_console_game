@@ -11,3 +11,4 @@ typedef struct Missile
 
 Missile MissileCreate(int x, int y, int velocity);
 void MissileDestroy(Missile * m);
+int MissileExist(Missile* m);

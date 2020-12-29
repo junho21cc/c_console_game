@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+
 #include <stdio.h>
 #include <time.h>
 #include <conio.h>
@@ -9,32 +10,54 @@
 #include "Fps.h"
 #include "Missile.h"
 
+#define MAX_MISSILE 10
+
 FPSData* fpsData;
 int hero_x, hero_y;
 
-Missile m;
+Missile m[MAX_MISSILE];
+
+int FindEmptyMissileIndex()
+{
+    for (int i = 0; i < MAX_MISSILE; i++)
+    {
+        if (!MissileExist(&m[i]))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 
 void Init()
 {
     InitFPSData(&fpsData);
     hero_x = 10;
     hero_y = 10;
-
-    MissileDestroy(&m);
+    for (int i = 0; i < MAX_MISSILE; i++)
+    {
+        MissileDestroy(&m[i]);
+    }
 }
 
 void Update()
 {
     clock_t CurTime = clock();
     
-    if (CurTime - m.move_time > m.velocity)
+    for (int i = 0; i < MAX_MISSILE; i++)
     {
-        m.y--;
-        m.move_time = CurTime;
-
-        if (m.y < -1)
+        if (MissileExist(&m[i]))
         {
-            MissileDestroy(&m);
+            if (CurTime - m[i].move_time > m[i].velocity)
+            {
+                m[i].y--;
+                m[i].move_time = CurTime;
+
+                if (m[i].y < 0)
+                {
+                    MissileDestroy(&m[i]);
+                }
+            }
         }
     }
 }
@@ -46,9 +69,12 @@ void Render()
 
     ScreenPrint(hero_x, hero_y, "A");
 
-    if (m.x >= 0 && m.y >= 0)
+    for (int i = 0; i < MAX_MISSILE; i++)
     {
-        ScreenPrint(m.x, m.y, "^");
+        if (MissileExist(&m[i]))
+        {
+            ScreenPrint(m[i].x, m[i].y, "!");
+        }
     }
 
     ScreenFlipping();
@@ -84,8 +110,11 @@ int GetKeyEvent()
 
 int KeyProcess(int key)
 {
+    int empty_missile_index;
+
     if (key == 'q')
         return 1;
+
     switch (key)
     {
     case 'j':
@@ -101,7 +130,12 @@ int KeyProcess(int key)
         hero_y -= 1;
         break;
     case 'a':
-        m = MissileCreate(hero_x, hero_y - 1, 200);
+        empty_missile_index = FindEmptyMissileIndex();
+
+        if (empty_missile_index != -1)
+        {
+            m[empty_missile_index] = MissileCreate(hero_x, hero_y - 1, 100);
+        }
         break;
     }
     return 0;

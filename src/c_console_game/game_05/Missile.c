@@ -15,3 +15,12 @@ void MissileDestroy(Missile* m)
 	m->x = -1;
 	m->y = -1;
 }
+
+int MissileExist(Missile* m)
+{
+	if (m->x > -1 && m->y > -1)
+	{
+		return 1;
+	}
+	return 0;
+}
