@@ -10,6 +10,12 @@
 #include "Fps.h"
 #include "MissileList.h"
 
+#define SCREEN_WIDTH    120
+#define SCREEN_HEIGHT   30
+#define INIT_HERO_X     10
+#define INIT_HERO_Y     10
+#define DEFALT_MISSILE_VELOCITY 100
+
 FPSData* fpsData;
 int hero_x, hero_y;
 
@@ -18,8 +24,8 @@ MissileList missile_list;
 void Init()
 {
     InitFPSData(&fpsData);
-    hero_x = 10;
-    hero_y = 10;
+    hero_x = INIT_HERO_X;
+    hero_y = INIT_HERO_Y;
 
     missile_list.head = NULL;
 }
@@ -109,19 +115,29 @@ int KeyProcess(int key)
     switch (key)
     {
     case 'j':
-        hero_x -= 1;
+        if (hero_x > 0) {
+            hero_x -= 1;
+        }
         break;
     case 'l':
-        hero_x += 1;
+        if (hero_x < SCREEN_WIDTH -1) {
+            hero_x += 1;
+        }
         break;
     case 'k':
-        hero_y += 1;
+        if (hero_y < SCREEN_HEIGHT -1) {
+            hero_y += 1;
+        }
         break;
     case 'i':
-        hero_y -= 1;
+        if (hero_y > 0) {
+            hero_y -= 1;
+        }
         break;
     case 'a':
-        MissileListInsert(&missile_list, hero_x, hero_y - 1, 100);
+        if (hero_y > 0) {
+            MissileListInsert(&missile_list, hero_x, hero_y - 1, DEFALT_MISSILE_VELOCITY);
+        }
         break;
     }
     return 0;
