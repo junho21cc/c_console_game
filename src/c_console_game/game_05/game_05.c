@@ -10,8 +10,6 @@
 #include "Fps.h"
 #include "MissileList.h"
 
-#define MAX_MISSILE 10
-
 FPSData* fpsData;
 int hero_x, hero_y;
 
@@ -30,6 +28,8 @@ void Update()
 {
     clock_t CurTime = clock();
     MissileItem* m = missile_list.head;
+    MissileItem* pre_m = NULL;
+
     while (m) 
     {
         if (CurTime - m->move_time > m->velocity)
@@ -39,9 +39,21 @@ void Update()
 
             if (m->y < 0)
             {
-                //MissileDestroy(&m);
+                if (pre_m == NULL) {
+                    missile_list.head = m->next;
+                    free(m);
+                    m = missile_list.head;
+                }
+                else {
+                    pre_m->next = m->next;
+                    free(m);
+                    m = pre_m->next;
+                }
+                continue;
             }
-        }
+        }   
+        // ¼øÈ¸
+        pre_m = m;  
         m = m->next;
     }
 }
