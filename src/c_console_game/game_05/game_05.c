@@ -171,6 +171,3 @@ int main()
     ScreenRelease();
     return 0;
 }
-
-
-// 출처: https://huiyu.tistory.com/entry/C언어로-게임만들기-3-렌더링-기능-구현?category=463903 [huiyu's blog]
